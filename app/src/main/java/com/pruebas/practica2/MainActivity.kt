@@ -20,10 +20,15 @@ import androidx.compose.foundation.layout.size
 
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -97,6 +102,30 @@ val colores = listOf(
     Color(0xFFF39399),
     Color(0xFFF6D8BD)
 )
+
+val nombres = listOf(
+    "Alondra Hernandez Martínez",
+    "Katia Marcela Carpio Domínguez",
+    "Isai Candelario Sandoval"
+)
+
+val imas = listOf(
+    R.drawable.computer_greenback_man,
+    R.drawable.computer_greenback_man,
+    R.drawable.computer_greenback_man
+)
+
+val campos_perfil = listOf(
+    "USERNAME",
+    "ID",
+    "EMAIL",
+    "FIRSTNAME",
+    "LASTNAME",
+    "CREDITS",
+    "PFP_URL",
+    "XP"
+)
+
 
 interface ApiService {
     @GET("datoperturbador")
@@ -473,37 +502,39 @@ fun Home(
         }
     }
 
-    BarraTOP(
-        onLogout = onLogout
-    )
-
-
-
-    Column(
-        modifier=Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-        Text(
-            fontSize = 28.sp,
-            text = "Te damos la bienvenida,${userData.username}"
-        )
-        Spacer( modifier = Modifier.size(20.dp))
-
-        AsyncImage(
-            modifier = Modifier.size(300.dp),
-            model= userData.pfp_url,
-            //model = "https://cataas.com/cat?type=square",
-            contentDescription="un gato",
-            placeholder = painterResource(R.drawable.reloj_de_arena),
-            error = painterResource(R.drawable.advertencia)
+    Column(modifier = Modifier.fillMaxSize()) {
+        BarraTOP(
+            onLogout = onLogout
         )
 
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ){
+            Text(
+                fontSize = 28.sp,
+                text = "Te damos la bienvenida,${userData.username}"
+            )
+            Spacer( modifier = Modifier.size(20.dp))
 
-        Text(
-            fontSize = 14.sp,
-            text = textoDato
-        )
+            AsyncImage(
+                modifier = Modifier.size(300.dp),
+                model= userData.pfp_url,
+                //model = "https://cataas.com/cat?type=square",
+                contentDescription="un gato",
+                placeholder = painterResource(R.drawable.reloj_de_arena),
+                error = painterResource(R.drawable.advertencia)
+            )
+
+
+            Text(
+                fontSize = 14.sp,
+                text = textoDato
+            )
+        }
 
         BarraNavegacion(
             pantallaActual = "home",
@@ -511,12 +542,12 @@ fun Home(
             onCreditos = onCreditos,
             onPerfil = onPerfil
         )
-
-
     }
 
 
 }
+
+
 
 @Composable
 fun Creditos(
@@ -528,38 +559,84 @@ fun Creditos(
 {
     val scope=rememberCoroutineScope ()
 
-    BarraTOP(
-        onLogout = onLogout
-    )
-
-
-
-
-    Column(
-        modifier=Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-        Text(
-            fontSize = 28.sp,
-            text = "Te damos la bienvenida,${userData.username}"
+    Column(modifier = Modifier.fillMaxSize()) {
+        BarraTOP(
+            onLogout = onLogout
         )
-        Spacer( modifier = Modifier.size(20.dp))
 
-        Image(
-            modifier = Modifier.size(300.dp),
-            painter = painterResource(R.drawable.advertencia),
-            contentDescription = "un gato"
-        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ){
+
+            for (i in nombres.indices) {
+                Text(
+                    fontSize = 16.sp,
+                    color = colores [1],
+                    text = nombres[i]
+                )
+
+                Image(
+                    modifier = Modifier.size(150.dp),
+                    painter = painterResource(imas[i]),
+                    contentDescription = ""
+                )
+
+                Spacer( modifier = Modifier.size(40.dp))
+            }
+        }
 
         BarraNavegacion(
             pantallaActual = "creditos",
             onHome = onHome,
             onCreditos = {},
-            onPerfil = onPerfil,
+            onPerfil = onPerfil
         )
+    }
 
 
+}
+
+@Composable
+fun Perfildata(
+    campo:String,
+    campo_dato:String,
+    icono: ImageVector
+
+)
+{
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.size(8.dp))
+            Icon(
+                imageVector = icono,
+                contentDescription = null,
+                tint = colores[1]
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text(
+                fontSize = 24.sp,
+                color = colores[1],
+                text = ""+campo+":"
+            )
+        }
+
+        Text(
+            fontSize = 24.sp,
+            color = colores[2],
+            text =  "${campo_dato}"
+        )
+        Spacer(modifier = Modifier.size(20.dp))
 
 
     }
@@ -575,46 +652,38 @@ fun Perfil(
     onLogout: () -> Unit
 )
 {
-    val scope=rememberCoroutineScope ()
-
-    BarraTOP(
-        onLogout = onLogout
-    )
-
-
-
-
-    Column(
-        modifier=Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
-        Text(
-            fontSize = 28.sp,
-            text = "Te damos la bienvenida,${userData.username}"
+    Column(modifier = Modifier.fillMaxSize()) {
+        BarraTOP(
+            onLogout = onLogout
         )
-        Spacer( modifier = Modifier.size(20.dp))
 
-        Image(
-            modifier = Modifier.size(300.dp),
-            painter = painterResource(R.drawable.advertencia),
-            contentDescription = "un gato"
-        )
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Perfildata(campo = "USERNAME", campo_dato = userData.username, icono = Icons.Default.Person)
+            Perfildata(campo = "ID", campo_dato = userData.id.toString(), icono = Icons.Default.Info)
+            Perfildata(campo = "EMAIL", campo_dato = userData.email, icono = Icons.Default.Email)
+            Perfildata(campo = "FULLNAME", campo_dato = "${userData.firstname} ${userData.lastname}", icono = Icons.Default.AccountCircle)
+            Perfildata(campo = "CREDITS", campo_dato = userData.credits.toString(), icono = Icons.Default.Star)
+            Perfildata(campo = "PFP_URL", campo_dato = userData.pfp_url, icono = Icons.Default.Info)
+            Perfildata(campo = "XP", campo_dato = userData.xp.toString(), icono = Icons.Default.Favorite)
+        }
 
         BarraNavegacion(
             pantallaActual = "perfil",
             onHome = onHome,
             onCreditos = onCreditos,
-            onPerfil = {},
+            onPerfil = {}
         )
-
-
-
-
     }
-
-
 }
+
+
+
 
 
 @Preview(showBackground = true)
@@ -682,12 +751,12 @@ fun PerfilPreview()
 {
     Perfil(
         userData = LoginResponse(
-            username="",
+            username="Katham_28",
             id =1,
             email="usa@gmail.com",
-            firstname =  "",
-            lastname = "",
-            pfp_url = "urlsisisi",
+            firstname =  "Katia",
+            lastname = "Carpio",
+            pfp_url = "http://example.com",
             credits=100,
             xp=999,
             error=null

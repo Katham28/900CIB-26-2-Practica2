@@ -8,13 +8,13 @@ plugins {
 android {
     namespace = "com.pruebas.practica2"
     compileSdk {
-        version = release(37)
+        version = release(36)
     }
 
     defaultConfig {
         applicationId = "com.pruebas.practica2"
         minSdk = 26
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
