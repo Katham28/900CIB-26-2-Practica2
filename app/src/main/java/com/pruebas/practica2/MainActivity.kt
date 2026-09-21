@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBarsPadding
 
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
@@ -32,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,6 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,7 +85,7 @@ data class DatoPerturbador(
     val id: Int,
     val text: String,
     val source:String?
-    )
+)
 
 data class LoginResponse(
     val username:String,
@@ -97,10 +101,10 @@ data class LoginResponse(
 
 
 val colores = listOf(
-    Color(0xFF5D3140),
-    Color(0xFFCF4173),
-    Color(0xFFF39399),
-    Color(0xFFF6D8BD)
+    Color(0xFF010736),
+    Color(0xFF22396F),
+    Color(0xFF0D1C42),
+    Color(0xFFFCF1D0)
 )
 
 val nombres = listOf(
@@ -110,9 +114,9 @@ val nombres = listOf(
 )
 
 val imas = listOf(
-    R.drawable.computer_greenback_man,
-    R.drawable.computer_greenback_man,
-    R.drawable.computer_greenback_man
+    R.drawable.avatar_alondra,
+    R.drawable.avatar_katia,
+    R.drawable.avatar_isai
 )
 
 val campos_perfil = listOf(
@@ -130,7 +134,7 @@ val campos_perfil = listOf(
 interface ApiService {
     @GET("datoperturbador")
     suspend fun getDatoPerturbador(): DatoPerturbador
-    
+
     @FormUrlEncoded
     @POST("login")
     suspend fun login(
@@ -190,7 +194,7 @@ fun App()
             if (user ==null){
                 //o se puede llegar a home sin userDATA
                 LaunchedEffect(key1 = Unit){
-                     navController.navigate(route="mainmenu")
+                    navController.navigate(route="mainmenu")
                 }
             }else{
 
@@ -216,7 +220,7 @@ fun App()
             val user=userData
             if (user ==null){
                 LaunchedEffect(key1 = Unit){
-                     navController.navigate(route="mainmenu")
+                    navController.navigate(route="mainmenu")
                 }
             }else{
                 Creditos(
@@ -277,8 +281,8 @@ fun MainMenu( onLoginSuccess: (LoginResponse)->Unit  )
             fontSize = 36.sp)
         Spacer( modifier = Modifier.height(16.dp))
         Image(
-            modifier = Modifier.size(300.dp),
-            painter = painterResource(R.drawable.computer_greenback_man),
+            modifier = Modifier.size(200.dp),
+            painter = painterResource(R.drawable.logo_appify),
             contentDescription = "application logo"
         )
         Text(
@@ -327,8 +331,9 @@ fun Login(   onLoginSuccess: (LoginResponse)->Unit   )
     )
     {
         val usernameState = rememberTextFieldState(initialText = "")
-        TextField(
+        OutlinedTextField(
             state = usernameState,
+            modifier = Modifier.fillMaxWidth(),
             label = {
                 Text("Nombre de usuario")
             }
@@ -336,13 +341,15 @@ fun Login(   onLoginSuccess: (LoginResponse)->Unit   )
         val passState = rememberTextFieldState(initialText = "")
         OutlinedSecureTextField(
             state = passState,
-            label = { Text("password") }
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Contraseña") }
         )
 
 
         var  buttonEnabledState by remember {mutableStateOf(value= true)}
         ///botonazo de login
         Button (
+            modifier = Modifier.fillMaxWidth(),
             enabled = buttonEnabledState,
             onClick = {
                 buttonEnabledState = false
@@ -362,24 +369,28 @@ fun Login(   onLoginSuccess: (LoginResponse)->Unit   )
                             Log.d("Myapp","usuario logueado: ${userData.username}")
                             onLoginSuccess(userData)
                         }
-
-
+                    } catch(error: java.io.IOException){
+                        Log.d("Myapp","Sin conexión: ${error.message}")
+                        buttonEnabledState = true
+                        textoerror="No se pudo conectar. Revisa tu conexión a internet e inténtalo de nuevo"
                     } catch(error: Exception){
                         Log.d("Myapp","Excepción en login: ${error.message}")
                         buttonEnabledState = true
-                        textoerror="Error al iniciar sesión, intentelo más tarde"
+                        textoerror="Error al iniciar sesión, inténtalo más tarde"
                     }
                 }
                 //onLoginSucces( respuesta del servidor porcesada)
             }
         )
         {
-            Text("Log in!")
+            Text("Iniciar sesión")
         }
         Text(
-            fontSize = 26.sp,
+            modifier = Modifier.fillMaxWidth(),
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
             text = textoerror,
-            color = Color.Red
+            color = MaterialTheme.colorScheme.error
         )
     }
 
@@ -425,6 +436,7 @@ fun BarraNavegacion(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .padding(top = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ){
@@ -440,7 +452,7 @@ fun BarraNavegacion(
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text("Home")
+            Text("Inicio")
         }
 
         Button (
@@ -450,7 +462,7 @@ fun BarraNavegacion(
         )
         {
             Icon(
-                imageVector = Icons.Default.Star,
+                imageVector = Icons.Default.Info,
                 contentDescription = null,
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
@@ -486,7 +498,7 @@ fun Home(
 {
 
     val scope=rememberCoroutineScope ()
-    var textoDato by remember {mutableStateOf(value = "obteniendo dato...")}
+    var textoDato by remember {mutableStateOf(value = "Obteniendo dato...")}
 
     var cargandoDato by remember { mutableStateOf(value = true) }
 
@@ -497,6 +509,7 @@ fun Home(
             textoDato= res.text
         }catch(e: Exception){
             Log.d("MyApp", "error: ${e.message}")
+            textoDato = "No se pudo obtener el dato"
         } finally {
             cargandoDato = false
         }
@@ -516,7 +529,8 @@ fun Home(
         ){
             Text(
                 fontSize = 28.sp,
-                text = "Te damos la bienvenida,${userData.username}"
+                textAlign = TextAlign.Center,
+                text = "Te damos la bienvenida, ${userData.username}"
             )
             Spacer( modifier = Modifier.size(20.dp))
 
@@ -524,14 +538,16 @@ fun Home(
                 modifier = Modifier.size(300.dp),
                 model= userData.pfp_url,
                 //model = "https://cataas.com/cat?type=square",
-                contentDescription="un gato",
+                contentDescription="Foto de perfil",
                 placeholder = painterResource(R.drawable.reloj_de_arena),
                 error = painterResource(R.drawable.advertencia)
             )
 
 
             Text(
+                modifier = Modifier.padding(horizontal = 24.dp),
                 fontSize = 14.sp,
+                textAlign = TextAlign.Center,
                 text = textoDato
             )
         }
@@ -580,12 +596,12 @@ fun Creditos(
                 )
 
                 Image(
-                    modifier = Modifier.size(150.dp),
+                    modifier = Modifier.size(100.dp),
                     painter = painterResource(imas[i]),
                     contentDescription = ""
                 )
 
-                Spacer( modifier = Modifier.size(40.dp))
+                Spacer( modifier = Modifier.size(16.dp))
             }
         }
 
@@ -632,8 +648,12 @@ fun Perfildata(
         }
 
         Text(
+            modifier = Modifier.weight(1f),
             fontSize = 24.sp,
             color = colores[2],
+            textAlign = TextAlign.End,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             text =  "${campo_dato}"
         )
         Spacer(modifier = Modifier.size(20.dp))
@@ -664,12 +684,12 @@ fun Perfil(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Perfildata(campo = "USERNAME", campo_dato = userData.username, icono = Icons.Default.Person)
+            Perfildata(campo = "USUARIO", campo_dato = userData.username, icono = Icons.Default.Person)
             Perfildata(campo = "ID", campo_dato = userData.id.toString(), icono = Icons.Default.Info)
-            Perfildata(campo = "EMAIL", campo_dato = userData.email, icono = Icons.Default.Email)
-            Perfildata(campo = "FULLNAME", campo_dato = "${userData.firstname} ${userData.lastname}", icono = Icons.Default.AccountCircle)
-            Perfildata(campo = "CREDITS", campo_dato = userData.credits.toString(), icono = Icons.Default.Star)
-            Perfildata(campo = "PFP_URL", campo_dato = userData.pfp_url, icono = Icons.Default.Info)
+            Perfildata(campo = "CORREO", campo_dato = userData.email, icono = Icons.Default.Email)
+            Perfildata(campo = "NOMBRE", campo_dato = "${userData.firstname} ${userData.lastname}", icono = Icons.Default.AccountCircle)
+            Perfildata(campo = "CRÉDITOS", campo_dato = userData.credits.toString(), icono = Icons.Default.Star)
+            Perfildata(campo = "FOTO (URL)", campo_dato = userData.pfp_url, icono = Icons.Default.Info)
             Perfildata(campo = "XP", campo_dato = userData.xp.toString(), icono = Icons.Default.Favorite)
         }
 
