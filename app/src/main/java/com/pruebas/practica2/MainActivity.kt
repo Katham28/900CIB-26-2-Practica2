@@ -50,6 +50,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +65,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.google.gson.Gson
+import com.pruebas.practica2.miFuente
 import kotlinx.coroutines.launch
 
 import retrofit2.Retrofit
@@ -104,8 +107,12 @@ val colores = listOf(
     Color(0xFF010736),
     Color(0xFF22396F),
     Color(0xFF0D1C42),
-    Color(0xFFFCF1D0)
+    Color(0xFFCEEDFA)
 )
+
+
+
+val miFuente = FontFamily(Font(R.font.allan))
 
 val nombres = listOf(
     "Alondra Hernandez Martínez",
@@ -278,7 +285,10 @@ fun MainMenu( onLoginSuccess: (LoginResponse)->Unit  )
     ){
         Text(
             text= "Appify",
-            fontSize = 36.sp)
+            fontSize = 38.sp,
+            fontFamily = miFuente
+        )
+
         Spacer( modifier = Modifier.height(16.dp))
         Image(
             modifier = Modifier.size(200.dp),
@@ -360,11 +370,16 @@ fun Login(   onLoginSuccess: (LoginResponse)->Unit   )
                             pass= sha256(text = passState.text.toString()),
                             token = "code37"
                         )
-                        if (userData.error!=null){
+                        if(usernameState.text.toString() == "" || passState.text.toString()=="" ){
+                            Log.d("Myapp","error: ${userData.error}")
+                            buttonEnabledState = true
+                            textoerror="Llene todos los campos"
+                        }
+                        else if (userData.error!=null){
                             Log.d("Myapp","error: ${userData.error}")
                             buttonEnabledState = true
                             textoerror="Usuario o contraseña incorrectos"
-                        } else {
+                        }  else {
                             textoerror=""
                             Log.d("Myapp","usuario logueado: ${userData.username}")
                             onLoginSuccess(userData)
@@ -440,20 +455,6 @@ fun BarraNavegacion(
             .padding(top = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Button (
-            colors = ButtonDefaults.buttonColors(containerColor = colores[2]),
-            enabled = pantallaActual != "home",
-            onClick = { onHome() }
-        )
-        {
-            Icon(
-                imageVector = Icons.Default.Home,
-                contentDescription = null,
-                modifier = Modifier.size(ButtonDefaults.IconSize)
-            )
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text("Inicio")
-        }
 
         Button (
             colors = ButtonDefaults.buttonColors(containerColor = colores[2]),
@@ -469,6 +470,22 @@ fun BarraNavegacion(
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
             Text("Créditos")
         }
+
+        Button (
+            colors = ButtonDefaults.buttonColors(containerColor = colores[2]),
+            enabled = pantallaActual != "home",
+            onClick = { onHome() }
+        )
+        {
+            Icon(
+                imageVector = Icons.Default.Home,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text("Inicio")
+        }
+
 
         Button (
             colors = ButtonDefaults.buttonColors(containerColor = colores[2]),
@@ -528,9 +545,15 @@ fun Home(
             verticalArrangement = Arrangement.Center
         ){
             Text(
-                fontSize = 28.sp,
+                fontSize = 32.sp,
                 textAlign = TextAlign.Center,
-                text = "Te damos la bienvenida, ${userData.username}"
+                text = "Te damos la bienvenida,",
+            )
+            Text(
+                fontSize = 38.sp,
+                textAlign = TextAlign.Center,
+                text = " ${userData.username}",
+                fontFamily = miFuente
             )
             Spacer( modifier = Modifier.size(20.dp))
 
@@ -588,6 +611,15 @@ fun Creditos(
             verticalArrangement = Arrangement.Center
         ){
 
+            Text(
+                fontSize = 38.sp,
+                textAlign = TextAlign.Center,
+                text = "Creditos",
+                        fontFamily = miFuente
+            )
+
+            Spacer(modifier = Modifier.size(20.dp))
+
             for (i in nombres.indices) {
                 Text(
                     fontSize = 16.sp,
@@ -641,7 +673,8 @@ fun Perfildata(
             )
             Spacer(modifier = Modifier.size(8.dp))
             Text(
-                fontSize = 24.sp,
+                fontSize = 28.sp,
+                fontFamily = miFuente,
                 color = colores[1],
                 text = ""+campo+":"
             )
@@ -649,7 +682,7 @@ fun Perfildata(
 
         Text(
             modifier = Modifier.weight(1f),
-            fontSize = 24.sp,
+            fontSize = 23.sp,
             color = colores[2],
             textAlign = TextAlign.End,
             maxLines = 2,
@@ -663,6 +696,7 @@ fun Perfildata(
 
 
 }
+
 
 @Composable
 fun Perfil(
@@ -684,12 +718,30 @@ fun Perfil(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                fontSize = 38.sp,
+                textAlign = TextAlign.Center,
+                fontFamily = miFuente,
+                text = "Perfil"
+            )
+
+            AsyncImage(
+                modifier = Modifier.size(200.dp),
+                model= userData.pfp_url,
+                //model = "https://cataas.com/cat?type=square",
+                contentDescription="Foto de perfil",
+                placeholder = painterResource(R.drawable.reloj_de_arena),
+                error = painterResource(R.drawable.advertencia)
+            )
+
+
+
             Perfildata(campo = "USUARIO", campo_dato = userData.username, icono = Icons.Default.Person)
             Perfildata(campo = "ID", campo_dato = userData.id.toString(), icono = Icons.Default.Info)
             Perfildata(campo = "CORREO", campo_dato = userData.email, icono = Icons.Default.Email)
             Perfildata(campo = "NOMBRE", campo_dato = "${userData.firstname} ${userData.lastname}", icono = Icons.Default.AccountCircle)
-            Perfildata(campo = "CRÉDITOS", campo_dato = userData.credits.toString(), icono = Icons.Default.Star)
-            Perfildata(campo = "FOTO (URL)", campo_dato = userData.pfp_url, icono = Icons.Default.Info)
+            Perfildata(campo = "CREDITOS", campo_dato = userData.credits.toString(), icono = Icons.Default.Star)
+            //Perfildata(campo = "FOTO (URL)", campo_dato = userData.pfp_url, icono = Icons.Default.Info)
             Perfildata(campo = "XP", campo_dato = userData.xp.toString(), icono = Icons.Default.Favorite)
         }
 
